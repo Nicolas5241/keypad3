@@ -1,32 +1,3 @@
-/*!
-# Platform-agnostic driver for 3X4 numeric keypads
-
-Provides a driver for reading from standard 3X4 keypads
-
-## Example
-
-```rust
-let rows = (
-    gpiob.pb15.into_pull_up_input(&mut gpiob.crh),
-    gpioa.pa7.into_pull_up_input(&mut gpioa.crl),
-    gpiob.pb6.into_pull_up_input(&mut gpiob.crl),
-    gpioa.pa9.into_pull_up_input(&mut gpioa.crh),
-);
-
-let cols = (
-    gpioa.pa8.into_open_drain_output(&mut gpioa.crh),
-    gpiob.pb5.into_open_drain_output(&mut gpiob.crl),
-    gpioc.pc7.into_open_drain_output(&mut gpioc.crl),
-);
-
-let mut keypad = Keypad::new(rows, cols);
-
-let key = keypad.read_char(&mut delay);
-if key != ' ' {
-    ...
-}
-```
-*/
 #![no_std]
 
 use embedded_hal::digital::v2::{InputPin, OutputPin};
@@ -38,7 +9,7 @@ pub type Rows<R0, R1, R2, R3> = (R0, R1, R2, R3);
 
 /// Defines a type that makes it easier to supply the four pins required for rows in the keypad
 /// These pins need to support the `embedded_hal::digital::v2::OutputPin` trait
-pub type Columns<C0, C1, C2> = (C0, C1, C2);
+pub type Columns<C0, C1, C2, C3> = (C0, C1, C2, C3);
 
 /// Manages the pins and the logic for scanning a keypad
 pub struct Keypad<
@@ -49,9 +20,10 @@ pub struct Keypad<
     C0: OutputPin,
     C1: OutputPin,
     C2: OutputPin,
+    C3: OutputPin,
 > {
     rows: Rows<R0, R1, R2, R3>,
-    columns: Columns<C0, C1, C2>,
+    columns: Columns<C0, C1, C2, C3>,
 }
 
 impl<
@@ -62,10 +34,11 @@ impl<
         C0: OutputPin,
         C1: OutputPin,
         C2: OutputPin,
-    > Keypad<R0, R1, R2, R3, C0, C1, C2>
+		C3: OutputPin,
+    > Keypad<R0, R1, R2, R3, C0, C1, C2, C3>
 {
     /// Create a new instance of this structure
-    pub fn new(rows: Rows<R0, R1, R2, R3>, columns: Columns<C0, C1, C2>) -> Self {
+    pub fn new(rows: Rows<R0, R1, R2, R3>, columns: Columns<C0, C1, C2, C3>) -> Self {
         Self { rows, columns }
     }
 
@@ -104,6 +77,10 @@ impl<
         res |= self.read_column(delay) << 8;
         self.columns.2.set_high().unwrap_or_default();
 
+        self.columns.3.set_low().unwrap_or_default();
+        res |= self.read_column(delay) << 12;
+        self.columns.3.set_high().unwrap_or_default();
+
         res
     }
 
@@ -114,7 +91,12 @@ impl<
         match value {
             -1 => '*',
             -2 => '#',
-            _ => char::from_digit(value as u32, 10).unwrap(),
+			-3 => 'A',
+			-4 => 'B',
+			-5 => 'C',
+			-6 => 'D',
+            0..=9 => char::from_digit(value as u32, 10).unwrap(),
+			_ => ' ',
         }
     }
 
@@ -156,6 +138,10 @@ impl<
             KEY_6 => 6,
             KEY_9 => 9,
             KEY_HASH => -2,
+			KEY_A => -3,
+			KEY_B => -4,
+			KEY_C => -5,
+			KEY_D => -6,
             _ => -10,
         }
     }
@@ -173,3 +159,7 @@ const KEY_3: u16 = 1 << 8;
 const KEY_6: u16 = 1 << 9;
 const KEY_9: u16 = 1 << 10;
 const KEY_HASH: u16 = 1 << 11;
+const KEY_A: u16 = 1 << 12;
+const KEY_B: u16 = 1 << 13;
+const KEY_C: u16 = 1 << 14;
+const KEY_D: u16 = 1 << 15;

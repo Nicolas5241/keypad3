@@ -1,26 +1,23 @@
-# Matrix Keypad Driver
-
-![Screen](images/IMG_2554.jpg)
-
-Provides an embedded Rust driver for a common numeric matrix keypad.
+A crate based on keypad2 adapted to work with 4x4 matrix keypads instead.
 
 ## Example
 
 ```rust
 let rows = (
-    gpiob.pb15.into_pull_up_input(&mut gpiob.crh),
-    gpioa.pa7.into_pull_up_input(&mut gpioa.crl),
-    gpiob.pb6.into_pull_up_input(&mut gpiob.crl),
-    gpioa.pa9.into_pull_up_input(&mut gpioa.crh),
+    pins.d7.into_pull_up_input(),
+    pins.d6.into_pull_up_input(),
+    pins.d5.into_pull_up_input(),
+    pins.d4.into_pull_up_input(),
 );
 
-let cols = (
-    gpioa.pa8.into_open_drain_output(&mut gpioa.crh),
-    gpiob.pb5.into_open_drain_output(&mut gpiob.crl),
-    gpioc.pc7.into_open_drain_output(&mut gpioc.crl),
+let columns = (
+    pins.d3.into_opendrain(),
+    pins.d2.into_opendrain(),
+    pins.d1.into_opendrain(),
+    pins.d0.into_opendrain(),
 );
 
-let mut keypad = Keypad::new(rows, cols);
+let mut keypad = Keypad::new(rows, columns);
 
 let key = keypad.read_char(&mut delay);
 if key != ' ' {
