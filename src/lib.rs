@@ -1,44 +1,23 @@
 #![no_std]
 
+use core::convert::Infallible;
+
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 use embedded_hal::blocking::delay::DelayMs;
 
-/// Defines a type that makes it easier to supply the four pins required for rows in the keypad.
-/// These pins need to support the `embedded_hal::digital::v2::InputPin` trait
-pub type Rows<R0, R1, R2, R3> = (R0, R1, R2, R3);
-
-/// Defines a type that makes it easier to supply the four pins required for rows in the keypad
-/// These pins need to support the `embedded_hal::digital::v2::OutputPin` trait
-pub type Columns<C0, C1, C2, C3> = (C0, C1, C2, C3);
+pub type Rows<'a> = &'a [&'a dyn InputPin<Error = Infallible>];
+pub type Columns<'a> = &'a mut [&'a mut dyn OutputPin<Error = Infallible>];
 
 /// Manages the pins and the logic for scanning a keypad
-pub struct Keypad<
-    R0: InputPin,
-    R1: InputPin,
-    R2: InputPin,
-    R3: InputPin,
-    C0: OutputPin,
-    C1: OutputPin,
-    C2: OutputPin,
-    C3: OutputPin,
-> {
-    rows: Rows<R0, R1, R2, R3>,
-    columns: Columns<C0, C1, C2, C3>,
+pub struct Keypad<'a> {
+    rows: Rows<'a>,
+    columns: Columns<'a>,
 }
 
-impl<
-        R0: InputPin,
-        R1: InputPin,
-        R2: InputPin,
-        R3: InputPin,
-        C0: OutputPin,
-        C1: OutputPin,
-        C2: OutputPin,
-		C3: OutputPin,
-    > Keypad<R0, R1, R2, R3, C0, C1, C2, C3>
+impl<'a> Keypad<'a>
 {
     /// Create a new instance of this structure
-    pub fn new(rows: Rows<R0, R1, R2, R3>, columns: Columns<C0, C1, C2, C3>) -> Self {
+    pub fn new(rows: Rows<'a>, columns: Columns<'a>) -> Self {
         Self { rows, columns }
     }
 
@@ -65,21 +44,15 @@ impl<
     fn read(&mut self, delay: &mut dyn DelayMs<u16>) -> u16 {
         let mut res = 0;
 
-        self.columns.0.set_low().unwrap_or_default();
-        res |= self.read_column(delay) << 0;
-        self.columns.0.set_high().unwrap_or_default();
+		let number_of_rows = self.rows.len();
 
-        self.columns.1.set_low().unwrap_or_default();
-        res |= self.read_column(delay) << 4;
-        self.columns.1.set_high().unwrap_or_default();
+		for column_index in 0..self.columns.len() {
 
-        self.columns.2.set_low().unwrap_or_default();
-        res |= self.read_column(delay) << 8;
-        self.columns.2.set_high().unwrap_or_default();
+        	let _ = self.columns[column_index].set_low();
+        	res |= self.read_column(delay) << column_index * number_of_rows;
+        	let _ = self.columns[column_index].set_high();
+		}
 
-        self.columns.3.set_low().unwrap_or_default();
-        res |= self.read_column(delay) << 12;
-        self.columns.3.set_high().unwrap_or_default();
 
         res
     }
@@ -104,18 +77,11 @@ impl<
         let mut res = 0;
 
         delay.delay_ms(1u16);
-        if self.rows.0.is_low().unwrap_or_default() {
-            res |= 1 << 0;
-        }
-        if self.rows.1.is_low().unwrap_or_default() {
-            res |= 1 << 1;
-        }
-        if self.rows.2.is_low().unwrap_or_default() {
-            res |= 1 << 2;
-        }
-        if self.rows.3.is_low().unwrap_or_default() {
-            res |= 1 << 3;
-        }
+		for row_index in 0..self.rows.len() {
+        	if self.rows[row_index].is_low().unwrap_or(false) {
+            	res |= 1 << row_index;
+        	}
+		}
 
         res
     }
