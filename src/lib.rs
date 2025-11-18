@@ -114,7 +114,8 @@ impl<
         match value {
             -1 => '*',
             -2 => '#',
-            _ => char::from_digit(value as u32, 10).unwrap(),
+            0..=9 => char::from_digit(value as u32, 10).unwrap(),
+			_ => ' ',
         }
     }
 
