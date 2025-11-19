@@ -1,25 +1,33 @@
-A crate based on keypad2 adapted to work with 4x4 matrix keypads instead.
+A crate based on keypad2 adapted to work with matrix keypads of any size.
 
 ## Example
 
 ```rust
-let rows = (
-    pins.d7.into_pull_up_input(),
-    pins.d6.into_pull_up_input(),
-    pins.d5.into_pull_up_input(),
-    pins.d4.into_pull_up_input(),
-);
+let rows = &[
+    &pins.d7.into_pull_up_input().downgrade(),
+    &pins.d6.into_pull_up_input().downgrade(),
+    &pins.d5.into_pull_up_input().downgrade(),
+    &pins.d4.into_pull_up_input().downgrade(),
+];
 
-let columns = (
-    pins.d3.into_opendrain(),
-    pins.d2.into_opendrain(),
-    pins.d1.into_opendrain(),
-    pins.d0.into_opendrain(),
-);
+let columns = &mut [
+    &mut pins.d3.into_opendrain().downgrade(),
+    &mut pins.d2.into_opendrain().downgrade(),
+    &mut pins.d1.into_opendrain().downgrade(),
+    &mut pins.d0.into_opendrain().downgrade(),
+];
 
-let mut keypad = Keypad::new(rows, columns);
+let pins = Pins::new(rows, columns);
 
-let key = keypad.read_char(&mut delay);
+let mut keypad = Keypad::new(pins, &[
+    &['1', '2', '3', 'A'],
+    &['4', '5', '6', 'B'],
+    &['7', '8', '9', 'C'],
+    &['*', '0', '#', 'D'],
+]);
+
+let key = keypad.read_char(&mut delay_keypad);
+
 if key != ' ' {
     ...
 }
