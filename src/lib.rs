@@ -21,7 +21,7 @@ impl<'a> Keypad<'a> {
 
     pub fn read_char(&mut self, delay: &mut dyn DelayMs<u16>) -> char {
         match self.read_index(delay) {
-            Some(idx) => self.index_to_char(idx),
+            Some((row, column)) => self.layout[row][column],
             None => ' ',
         }
     }
@@ -33,11 +33,11 @@ impl<'a> Keypad<'a> {
     //
     // If 0 or >1 keys are pressed, returns None.
     //---------------------------------------------------------------------
-    fn read_index(&mut self, delay: &mut dyn DelayMs<u16>) -> Option<usize> {
+    fn read_index(&mut self, delay: &mut dyn DelayMs<u16>) -> Option<(usize, usize)> {
         let rows = self.rows.len();
         let cols = self.columns.len();
 
-        let mut found: Option<usize> = None;
+        let mut found: Option<(usize, usize)> = None;
 
         for c in 0..cols {
             let _ = self.columns[c].set_low();
@@ -45,15 +45,13 @@ impl<'a> Keypad<'a> {
 
             for r in 0..rows {
                 if self.rows[r].is_low().unwrap_or(false) {
-                    let idx = c * rows + r;
-
                     if found.is_some() {
                         // multi-key → treat as "no key"
                         let _ = self.columns[c].set_high();
                         return None;
                     }
 
-                    found = Some(idx);
+                    found = Some((r, c));
                 }
             }
 
@@ -62,18 +60,4 @@ impl<'a> Keypad<'a> {
 
         found
     }
-
-    //---------------------------------------------------------------------
-    // NEW: table-based, but internal — NO more bitmask KEY_ constants
-    //
-    // We map the row-major index to char depending on keypad size.
-    //---------------------------------------------------------------------
-    fn index_to_char(&self, index: usize) -> char {
-        let cols = self.columns.len();
-
-		let rows_index = index / cols;
-		let cols_index = index % cols;
-
-        self.layout[rows_index][cols_index]
-	}
 }
