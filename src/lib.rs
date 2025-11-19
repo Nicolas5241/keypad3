@@ -4,12 +4,12 @@ use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 
 pub struct Pins<'a, R: InputPin, C: OutputPin> {
-	rows: &'a mut [R],
-	columns: &'a mut [C],
+	rows: &'a [&'a R],
+	columns: &'a mut [&'a mut C],
 }
 
 impl<'a, R: InputPin, C: OutputPin> Pins<'a, R, C> {
-	pub fn new(rows: &'a mut [R], columns: &'a mut [C]) -> Self {
+	pub fn new(rows: &'a [&'a R], columns: &'a mut [&'a mut C]) -> Self {
 		Pins { rows, columns }
 	}
 }
