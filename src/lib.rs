@@ -8,6 +8,12 @@ pub struct Pins<'a, R: InputPin, C: OutputPin> {
 	columns: &'a mut [C],
 }
 
+impl<'a, R: InputPin, C: OutputPin> Pins<'a, R, C> {
+	pub fn new(rows: &'a mut [R], columns: &'a mut [C]) -> Self {
+		Pins { rows, columns }
+	}
+}
+
 pub type KeypadLayout<'a> = &'a [&'a [char]];
 
 pub struct Keypad<'a, R: InputPin, C: OutputPin> {
