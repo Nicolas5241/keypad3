@@ -21,9 +21,9 @@ fn main() -> ! {
 	];
 
 	let keypad_column_pins = &mut [
-		&mut pins.d9.into_opendrain().downgrade(),
 		&mut pins.d8.into_opendrain().downgrade(),
 		&mut pins.d7.into_opendrain().downgrade(),
+		&mut pins.d6.into_opendrain().downgrade(),
 	];
 
 	let keypad_pins = Pins::new(keypad_row_pins, keypad_column_pins);
