@@ -14,25 +14,25 @@ impl<'a, R: InputPin, C: OutputPin> Pins<'a, R, C> {
 	}
 }
 
-pub type KeypadLayout<'a> = &'a [&'a [char]];
+pub type KeypadLayout<'a, T> = &'a [&'a [T]];
 
-pub struct Keypad<'a, R: InputPin, C: OutputPin> {
+pub struct Keypad<'a, R: InputPin, C: OutputPin, T> {
 	pins: Pins<'a, R, C>,
-    layout: KeypadLayout<'a>,
+    layout: KeypadLayout<'a, T>,
 }
 
-impl<'a, R: InputPin, C: OutputPin> Keypad<'a, R, C> {
-    pub fn new(pins: Pins<'a, R, C>, layout: &'a [&'a [char]]) -> Self {
+impl<'a, R: InputPin, C: OutputPin, T> Keypad<'a, R, C, T> {
+    pub fn new(pins: Pins<'a, R, C>, layout: KeypadLayout<'a, T>) -> Self {
         Self {
 			pins,
             layout,
         }
     }
 
-    pub fn read_char(&mut self, delay: &mut dyn DelayMs<u16>) -> char {
+    pub fn read_char(&mut self, delay: &mut dyn DelayMs<u16>) -> Option<&T> {
         match self.read_index(delay) {
-            Some((row, column)) => self.layout[row][column],
-            None => ' ',
+            Some((row, column)) => Some(&self.layout[row][column]),
+            None => None,
         }
     }
 

@@ -1,16 +1,13 @@
 [package]
 name = "keypad3"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "MIT"
-keywords = ["no-std", "lcd", "embedded-hal-driver", "embedded-hal", "keypad"]
+keywords = ["no-std", "embedded-hal-driver", "embedded-hal", "keypad"]
 categories = ["embedded", "hardware-support", "no-std"]
-description = "A crate for reading a 3X4 keypad with embedded-hal"
-authors = ["John Socha-Leialoha"]
-#repository = "https://github.com/JohnSL/lcd_1602_i2c"
-#readme = "README.md"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A matrix keypad driver with support for any keypad size"
+authors = ["Nicolas Kist Steffen"]
+readme = "README.md"
 
 [dependencies]
 embedded-hal = { version = "^0.2.4", features = ["unproven"] }
