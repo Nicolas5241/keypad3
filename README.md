@@ -28,7 +28,7 @@ let mut keypad = Keypad::new(pins, &[
 
 let key = keypad.read_char(&mut delay_keypad);
 
-if key != ' ' {
+if let Some(key_value) = key {
     ...
 }
 ```

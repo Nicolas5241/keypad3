@@ -3,9 +3,13 @@
 use embedded_hal::blocking::delay::DelayMs;
 use embedded_hal::digital::v2::{InputPin, OutputPin};
 
+pub type Rows<'a, R> = &'a [&'a R];
+pub type Columns<'a, C> = &'a mut [&'a mut C];
+pub type KeypadLayout<'a, T> = &'a [&'a [T]];
+
 pub struct Pins<'a, R: InputPin, C: OutputPin> {
-	rows: &'a [&'a R],
-	columns: &'a mut [&'a mut C],
+	rows: Rows<'a, R>,
+	columns: Columns<'a, C>,
 }
 
 impl<'a, R: InputPin, C: OutputPin> Pins<'a, R, C> {
@@ -14,7 +18,6 @@ impl<'a, R: InputPin, C: OutputPin> Pins<'a, R, C> {
 	}
 }
 
-pub type KeypadLayout<'a, T> = &'a [&'a [T]];
 
 pub struct Keypad<'a, R: InputPin, C: OutputPin, T> {
 	pins: Pins<'a, R, C>,

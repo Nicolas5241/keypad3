@@ -2,6 +2,7 @@
 #![no_main]
 
 use arduino_hal::{ Delay, default_serial };
+use embedded_hal::digital::InputPin;
 use panic_halt as _;
 use keypad3::{Keypad, KeypadLayout, Pins};
 
@@ -13,7 +14,7 @@ fn main() -> ! {
 	let mut delay = Delay::new();
 	let mut serial = default_serial!(dp, pins, 57600);
 
-	let keypad_row_pins = & [
+	let keypad_row_pins = &[
 		&pins.d5.into_pull_up_input().downgrade(),
 		&pins.d4.into_pull_up_input().downgrade(),
 		&pins.d3.into_pull_up_input().downgrade(),
@@ -21,10 +22,10 @@ fn main() -> ! {
 	];
 
 	let keypad_column_pins = &mut [
-		&mut pins.d9.into_output().downgrade(),
-		&mut pins.d8.into_output().downgrade(),
-		&mut pins.d7.into_output().downgrade(),
-		&mut pins.d6.into_output().downgrade(),
+		&mut pins.d9.into_opendrain().downgrade(),
+		&mut pins.d8.into_opendrain().downgrade(),
+		&mut pins.d7.into_opendrain().downgrade(),
+		&mut pins.d6.into_opendrain().downgrade(),
 	];
 
 	let keypad_pins = Pins::new(keypad_row_pins, keypad_column_pins);
