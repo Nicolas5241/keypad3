@@ -3,11 +3,11 @@ A crate based on keypad2 adapted to work with matrix keypads of any size.
 ## Example
 
 ```rust
-let rows = &[
-    &pins.d7.into_pull_up_input().downgrade(),
-    &pins.d6.into_pull_up_input().downgrade(),
-    &pins.d5.into_pull_up_input().downgrade(),
-    &pins.d4.into_pull_up_input().downgrade(),
+let rows = &mut [
+    &mut pins.d7.into_pull_up_input().downgrade(),
+    &mut pins.d6.into_pull_up_input().downgrade(),
+    &mut pins.d5.into_pull_up_input().downgrade(),
+    &mut pins.d4.into_pull_up_input().downgrade(),
 ];
 
 let columns = &mut [

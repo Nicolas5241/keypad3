@@ -13,11 +13,11 @@ fn main() -> ! {
 	let mut delay = Delay::new();
 	let mut serial = default_serial!(dp, pins, 57600);
 
-	let keypad_row_pins = &[
-		&pins.d2.into_pull_up_input().downgrade(),
-		&pins.d3.into_pull_up_input().downgrade(),
-		&pins.d4.into_pull_up_input().downgrade(),
-		&pins.d5.into_pull_up_input().downgrade(),
+	let keypad_row_pins = &mut [
+		&mut pins.d2.into_pull_up_input().downgrade(),
+		&mut pins.d3.into_pull_up_input().downgrade(),
+		&mut pins.d4.into_pull_up_input().downgrade(),
+		&mut pins.d5.into_pull_up_input().downgrade(),
 	];
 
 	let keypad_column_pins = &mut [
