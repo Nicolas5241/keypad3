@@ -10,4 +10,4 @@ authors = ["Nicolas Kist Steffen"]
 readme = "README.md"
 
 [dependencies]
-embedded-hal = { version = "^0.2.4", features = ["unproven"] }
+embedded-hal = { version = "1.0" }
