@@ -10,7 +10,7 @@ fn main() -> ! {
     let dp = arduino_hal::Peripherals::take().unwrap();
     let pins = arduino_hal::pins!(dp);
 	
-	let mut delay = Delay::new();
+	let delay = Delay::new();
 	let mut serial = default_serial!(dp, pins, 57600);
 
 	let keypad_row_pins = &mut [
@@ -35,12 +35,12 @@ fn main() -> ! {
 		&['*', '0', '#'],
 	];
 
-	let mut keypad = Keypad::new(keypad_pins, keypad_layout);
+	let mut keypad = Keypad::new(keypad_pins, keypad_layout, delay);
 
 	let mut key_pressed = false;
 	
     loop {
-		let key = keypad.read_char(&mut delay);
+		let key = keypad.read();
 		if let Some(key) = key {
 			if !key_pressed {
 				ufmt::uwriteln!(&mut serial, "{}", key);

@@ -19,14 +19,16 @@ let columns = &mut [
 
 let pins = Pins::new(rows, columns);
 
-let mut keypad = Keypad::new(pins, &[
+let layout = &[
     &['1', '2', '3', 'A'],
     &['4', '5', '6', 'B'],
     &['7', '8', '9', 'C'],
     &['*', '0', '#', 'D'],
-]);
+]
 
-let key = keypad.read_char(&mut delay_keypad);
+let mut keypad: KeypadLayout<_> = Keypad::new(pins, layout, delay);
+
+let key = keypad.read();
 
 if let Some(key_value) = key {
     ...
