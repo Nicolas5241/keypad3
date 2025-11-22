@@ -47,7 +47,7 @@ impl<'a, R: InputPin, C: OutputPin, T, D: DelayNs> Keypad<'a, R, C, T, D> {
 	}
 }
 
-impl<'a, R, C, L, D> KeypadInterface<'a> for Keypad<'a, R, C, L, D> where R: InputPin, C: OutputPin, D: DelayNs {
+impl<'a, R, C, L, D> KeypadInterface for Keypad<'a, R, C, L, D> where R: InputPin, C: OutputPin, D: DelayNs {
 	type Key = &'a L;
 	fn read(&mut self) -> Option<Self::Key> {
 		match self.read_index() {

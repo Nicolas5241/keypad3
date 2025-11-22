@@ -1,5 +1,5 @@
-pub trait KeypadInterface<'a> {
-	type Key: 'a;
+pub trait KeypadInterface {
+	type Key;
 
 	fn read(&mut self) -> Option<Self::Key>;
 }
